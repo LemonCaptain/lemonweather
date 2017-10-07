@@ -1,10 +1,12 @@
 package com.lemonweather.android.db;
 
+import org.litepal.crud.DataSupport;
+
 /**
  * Created by Administrator on 2017/10/6/006.
  */
 
-public class County {
+public class County extends DataSupport {
     private int id;
     private String countyName;
     private String weatherId;
