@@ -1,9 +1,12 @@
+package com.lemonweather.android;
+
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,7 +54,7 @@ public class ChooseAreaFragment extends Fragment {
 
     private ListView listView;
 
-    private ArrayAdapter<String>adapter;
+    private ArrayAdapter<String> adapter;
 
     private List<String> dataList=new ArrayList<>();
 
@@ -65,16 +68,13 @@ public class ChooseAreaFragment extends Fragment {
 
     private int currentLevel;
 
-
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View view=inflater.inflate(R.layout.choose_area,container,false);
         titleText=(TextView)view.findViewById(R.id.title_text);
         backButton=(Button)view.findViewById(R.id.back_button);
         listView=(ListView)view.findViewById(R.id.list_view);
-        adapter=new ArrayAdapter<>(getContext(),android.R.layout.simple_list_item_1,dataList);
+        adapter=new ArrayAdapter<>(getActivity(),android.R.layout.simple_list_item_1,dataList);
         listView.setAdapter(adapter);
         return view;
     }
@@ -131,7 +131,7 @@ public class ChooseAreaFragment extends Fragment {
             listView.setSelection(0);
             currentLevel=LEVEL_PROVINCE;
         }else{
-            String address="http://guolin.tech/aqi/china";
+            String address="http://guolin.tech/api/china";
             queryFromServer(address,"province");
         }
     }
@@ -153,7 +153,7 @@ public class ChooseAreaFragment extends Fragment {
         }
         else{
             int provinceCode=selectedProvince.getProvinceCode();
-            String address="http://guolin.tech/aqi/china/"+provinceCode;
+            String address="http://guolin.tech/api/china/"+provinceCode;
             queryFromServer(address,"city");
         }
     }
@@ -175,7 +175,7 @@ public class ChooseAreaFragment extends Fragment {
         else{
             int provinceCode=selectedProvince.getProvinceCode();
             int citycode=selectedCity.getCityCode();
-            String address="http://guolin.tech/aqi/china/"+provinceCode+"/"+citycode;
+            String address="http://guolin.tech/api/china/"+provinceCode+"/"+citycode;
             queryFromServer(address,"county");
         }
     }
@@ -186,11 +186,14 @@ public class ChooseAreaFragment extends Fragment {
 
     private void queryFromServer(String address,final String type){
         showProgressDialog();
+
         HttpUtil.sendOkHttpRequest(address, new Callback() {
             @Override
             public void onResponse(Call call, Response response)throws IOException{
+
                 String responseText=response.body().string();
                 boolean result=false;
+                Log.d("ChooseAreaFragment","this isbegin ！+++++++++++++++"+responseText);
                 if("province".equals(type)){
                     result= Utility.handleProvinceResponse(responseText);
                 }
@@ -227,7 +230,7 @@ public class ChooseAreaFragment extends Fragment {
                     @Override
                     public void run() {
                         closeProgressDialog();
-                        Toast.makeText(getContext(),"加载失败",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(),"加载失败",Toast.LENGTH_SHORT).show();
                     }
                 });
             }
